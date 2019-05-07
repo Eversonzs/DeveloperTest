@@ -1,2 +1,2 @@
-# DeveloperTest
-Repository for developer test 
+# DeveloperTestAPI
+Repository for developer test API
