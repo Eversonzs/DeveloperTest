@@ -1,4 +1,4 @@
-import {Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinTable, PrimaryGeneratedColumn, ManyToOne} from "typeorm";
 import {UserRoles} from "./UserRoles";
 
 @Entity()
@@ -22,8 +22,8 @@ export class User {
     @Column()
     password: string;
 
-    @ManyToMany(type => UserRoles, userRoles => userRoles.user)
+    @ManyToOne(type => UserRoles, userRoles => userRoles.users)
     @JoinTable()
-    userRoles: UserRoles[];
+    userRol: UserRoles;
 
 }
