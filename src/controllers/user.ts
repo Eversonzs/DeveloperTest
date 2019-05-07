@@ -56,8 +56,15 @@ export async function getOne(request: Request, response: Response) {
             return;
         }
         response.send(user);
-    }catch(error){ 
+    }catch(error){
         console.log("Error:", error);
+        response.status(500);
+        response.json({
+            code: error.code,
+            message: error.message
+        })
+        response.end();
+        return;
     }
 }
 
@@ -85,8 +92,15 @@ export async function put(request: Request, response: Response) {
 
         await userRepository.save(user);
         response.send(user);
-    }catch(error){ 
+    }catch(error){
         console.log("Error:", error);
+        response.status(500);
+        response.json({
+            code: error.code,
+            message: error.message
+        })
+        response.end();
+        return;
     }
 }
 
@@ -103,7 +117,14 @@ export async function remove(request: Request, response: Response) {
 
         await userRepository.remove(user);
         response.send(user);
-    }catch(error){ 
+    }catch(error){
         console.log("Error:", error);
+        response.status(500);
+        response.json({
+            code: error.code,
+            message: error.message
+        })
+        response.end();
+        return;
     }
 }
