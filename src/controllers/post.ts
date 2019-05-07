@@ -4,74 +4,94 @@ import {Post} from "../entity/Post";
 import { Category } from "../entity/Category";
 
 export async function post(request: Request, response: Response) {
-    const postRepository = getManager().getRepository(Post);
-    const categoryRepository = getManager().getRepository(Category);
-    const categories = await categoryRepository.findByIds(request.body.categories)
-    request.body.categories = categories;
-    
-    const newPost = postRepository.create(request.body);
+    try{
+        const postRepository = getManager().getRepository(Post);
+        const categoryRepository = getManager().getRepository(Category);
+        const categories = await categoryRepository.findByIds(request.body.categories)
+        request.body.categories = categories;
+        
+        const newPost = postRepository.create(request.body);
 
-    await postRepository.save(newPost);
+        await postRepository.save(newPost);
 
-    response.send(newPost);
+        response.send(newPost);
+    }catch(error){ 
+        console.log("Error:", error);
+    }
 }
 
 export async function getAll(request: Request, response: Response) {
-    const postRepository = getManager().getRepository(Post);
-    const posts = await postRepository.find({ relations: ["categories"] });
+    try{
+        const postRepository = getManager().getRepository(Post);
+        const posts = await postRepository.find({ relations: ["categories"] });
 
-    response.send(posts);
+        response.send(posts);
+    }catch(error){ 
+        console.log("Error:", error);
+    }
 }
 
 export async function getOne(request: Request, response: Response) {
-    const postRepository = getManager().getRepository(Post);
-    const post = await postRepository.findOne(request.params.id, { relations: ["categories"] });
+    try{
+        const postRepository = getManager().getRepository(Post);
+        const post = await postRepository.findOne(request.params.id, { relations: ["categories"] });
 
-    // if post was not found return 404 to the client
-    if (!post) {
-        response.status(404);
-        response.end();
-        return;
+        // if post was not found return 404 to the client
+        if (!post) {
+            response.status(404);
+            response.end();
+            return;
+        }
+        response.send(post);
+    }catch(error){ 
+        console.log("Error:", error);
     }
-    response.send(post);
 }
 
 export async function put(request: Request, response: Response) {
-    const postRepository = getManager().getRepository(Post);
-    const categoryRepository = getManager().getRepository(Category);
+    try{
+        const postRepository = getManager().getRepository(Post);
+        const categoryRepository = getManager().getRepository(Category);
 
-    const post = await postRepository.findOne(request.params.id);
-    const categories = await categoryRepository.findByIds(request.body.categories)
-    request.body.categories = categories;
+        const post = await postRepository.findOne(request.params.id);
+        const categories = await categoryRepository.findByIds(request.body.categories)
+        request.body.categories = categories;
 
-    // if post was not found return 404 to the client
-    if (!post) {
-        response.status(404);
-        response.end();
-        return;
+        // if post was not found return 404 to the client
+        if (!post) {
+            response.status(404);
+            response.end();
+            return;
+        }
+
+        post.title = request.body.title || post.title;
+        post.text = request.body.text || post.text;
+        post.categories = request.body.categories || post.categories;
+
+        await postRepository.save(post);
+
+        response.send(post);
+    }catch(error){ 
+        console.log("Error:", error);
     }
-
-    post.title = request.body.title || post.title;
-    post.text = request.body.text || post.text;
-    post.categories = request.body.categories || post.categories;
-
-    await postRepository.save(post);
-
-    response.send(post);
 }
 
 export async function remove(request: Request, response: Response) {
-    const postRepository = getManager().getRepository(Post);
-    const post = await postRepository.findOne(request.params.id);
+    try{
+        const postRepository = getManager().getRepository(Post);
+        const post = await postRepository.findOne(request.params.id);
 
-    // if post was not found return 404 to the client
-    if (!post) {
-        response.status(404);
-        response.end();
-        return;
+        // if post was not found return 404 to the client
+        if (!post) {
+            response.status(404);
+            response.end();
+            return;
+        }
+
+        await postRepository.remove(post);
+
+        response.send(post);
+    }catch(error){ 
+        console.log("Error:", error);
     }
-
-    await postRepository.remove(post);
-
-    response.send(post);
 }

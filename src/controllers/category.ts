@@ -3,66 +3,86 @@ import {getManager} from "typeorm";
 import {Category} from "../entity/Category";
 
 export async function post(request: Request, response: Response) {
-    const categoryRepository = getManager().getRepository(Category);
+    try{
+        const categoryRepository = getManager().getRepository(Category);
 
-    const newCategory = categoryRepository.create(request.body);
+        const newCategory = categoryRepository.create(request.body);
 
-    await categoryRepository.save(newCategory);
+        await categoryRepository.save(newCategory);
 
-    response.send(newCategory);
+        response.send(newCategory);
+    }catch(error){ 
+        console.log("Error:", error);
+    }
 }
 
 export async function getAll(request: Request, response: Response) {
-    const categoryRepository = getManager().getRepository(Category);
-    const categories = await categoryRepository.find( { relations: ["posts"] });
+    try{
+        const categoryRepository = getManager().getRepository(Category);
+        const categories = await categoryRepository.find( { relations: ["posts"] });
 
-    response.send(categories);
+        response.send(categories);
+    }catch(error){ 
+        console.log("Error:", error);
+    }
 }
 
 export async function getOne(request: Request, response: Response) {
-    const categoryRepository = getManager().getRepository(Category);
-    const category = await categoryRepository.findOne(request.params.id, { relations: ["posts"] });
+    try{
+        const categoryRepository = getManager().getRepository(Category);
+        const category = await categoryRepository.findOne(request.params.id, { relations: ["posts"] });
 
-    // if category was not found return 404 to the client
-    if (!category) {
-        response.status(404);
-        response.end();
-        return;
+        // if category was not found return 404 to the client
+        if (!category) {
+            response.status(404);
+            response.end();
+            return;
+        }
+
+        response.send(category);
+    }catch(error){ 
+        console.log("Error:", error);
     }
-
-    response.send(category);
 }
 
 export async function put(request: Request, response: Response) {
-    const categoryRepository = getManager().getRepository(Category);
-    const category = await categoryRepository.findOne(request.params.id);
+    try{
+        const categoryRepository = getManager().getRepository(Category);
+        const category = await categoryRepository.findOne(request.params.id);
 
-    // if category was not found return 404 to the client
-    if (!category) {
-        response.status(404);
-        response.end();
-        return;
+        // if category was not found return 404 to the client
+        if (!category) {
+            response.status(404);
+            response.end();
+            return;
+        }
+
+        category.name = request.body.name || category.name;
+
+        await categoryRepository.save(category);
+
+        response.send(category);
+    }catch(error){ 
+        console.log("Error:", error);
     }
-
-    category.name = request.body.name || category.name;
-
-    await categoryRepository.save(category);
-
-    response.send(category);
 }
 
 export async function remove(request: Request, response: Response) {
-    const categoryRepository = getManager().getRepository(Category);
-    const category = await categoryRepository.findOne(request.params.id);
+    try{
+        const categoryRepository = getManager().getRepository(Category);
+        const category = await categoryRepository.findOne(request.params.id);
 
-    // if category was not found return 404 to the client
-    if (!category) {
-        response.status(404);
-        response.end();
-        return;
+        // if category was not found return 404 to the client
+        if (!category) {
+            response.status(404);
+            response.end();
+            return;
+        }
+
+        await categoryRepository.remove(category);
+
+        response.send(category);
+    }catch(error){ 
+        console.log("Error:", error);
     }
-
-    await categoryRepository.remove(category);
-
-    response.send(category);
 }
