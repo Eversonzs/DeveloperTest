@@ -68,6 +68,29 @@ export async function getOne(request: Request, response: Response) {
     }
 }
 
+export async function auth(request: Request, response: Response) {
+    try{
+        const userRepository = getManager().getRepository(User);
+        const user = await userRepository.findOne({ username: request.query.username, password: request.query.password }, { relations: ["userRol"] });
+
+        if (!user) {
+            response.status(404);
+            response.end();
+            return;
+        }
+        response.send(user);
+    }catch(error){
+        console.log("Error:", error);
+        response.status(500);
+        response.json({
+            code: error.code,
+            message: error.message
+        })
+        response.end();
+        return;
+    }
+}
+
 export async function put(request: Request, response: Response) {
     try{
         const userRepository = getManager().getRepository(User);
