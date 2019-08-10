@@ -5,7 +5,7 @@ import {Category} from "../entity/Category";
 export async function post(request: Request, response: Response) {
     try{
         const categoryRepository = getManager().getRepository(Category);
-
+        
         const newCategory = categoryRepository.create(request.body);
 
         await categoryRepository.save(newCategory);
